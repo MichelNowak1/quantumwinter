@@ -26,7 +26,7 @@ class ThreadAlice(Thread):
             qA = Alice.recvEPR()
             r = randint(0, 1)
             owf_key = bin(BB84_key)[2:] + bin(db_id)[2:] + bin(r)[2:] + bin(M)[2:]
-            owf_key = int(abs(hash(int(owf_key))))%256
+            owf_key = int(abs(hash(str(owf_key))))%256
             owf_state = qubit(Alice)
             owf_state.rot_X(owf_key)
             measure(Alice, qA)
