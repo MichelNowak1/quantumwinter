@@ -1,4 +1,6 @@
 from cqc.pythonLib import CQCConnection, qubit
+from one_way_function import one_way_function
+from swap_test import swap_test
 from threading import Thread
 from random import *
 import numpy as np
@@ -11,13 +13,6 @@ M = 400
 cheque = [{}]
 
 n = 1
-
-def one_way_function(owf_state, BB84_key, db_id, r, M):
-    owf_key = bin(BB84_key)[2:] + bin(db_id)[2:] + bin(r)[2:] + bin(M)[2:]
-    owf_key = int(abs(hash(str(owf_key))))%256
-    print(owf_key)
-    owf_state.rot_X(owf_key)
-    return owf_state
 
 
 def measure(conn, q):
@@ -43,8 +38,7 @@ class ThreadAlice(Thread):
 
             for i in range(0, n):
                 r = randint(0, 1)
-                owf_state = qubit(Alice)
-                owf_state = one_way_function(owf_state, BB84_key, db_id, r, M)
+                owf_state = one_way_function(Alice, BB84_key, db_id, r, M)
 
                 # Bell state measurement
                 owf_state.cnot(qA_arr[i])
@@ -116,8 +110,7 @@ class ThreadBank(Thread):
             # Bob computes one way function
             owf_bank_state_arr = []
             for i in range(0, n):
-                owf_state = qubit(Bob)
-                owf_bank_state = one_way_function(owf_state, BB84_key, db_id, cheque[i]['r'], cheque[i]['M'])
+                owf_bank_state = one_way_function(Bob, BB84_key, db_id, cheque[i]['r'], cheque[i]['M'])
                 owf_bank_state_arr.append(owf_bank_state)
 
 
