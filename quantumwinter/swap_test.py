@@ -9,12 +9,14 @@ with CQCConnection("Alice") as Alice:
     db_id = 1
     M = 2
     score = []
-    for i in tqdm.tqdm(range(256)):
+    for i in tqdm.tqdm(range(9)):
         salt = random.randint(0, 1000)
         epsilon = random.randint(1,10)
         q = qubit(Alice)
-        q1 = one_way_function(Alice, BB84_key, db_id, salt, M)
-        q2 = one_way_function(Alice, BB84_key, db_id, salt + epsilon, M)
+        q11 = qubit(Alice)
+        q1 = one_way_function(q11, BB84_key, db_id, salt, M)
+        q22 = qubit(Alice)
+        q2 = one_way_function(q22, BB84_key, db_id, salt, M)
         q1.cnot(q)
         q2.cnot(q)
         score.append(q.measure())
