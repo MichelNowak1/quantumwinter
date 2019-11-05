@@ -64,6 +64,12 @@ class ThreadBank(Thread):
             Bob.sendQubit(qA,"Alice")
             measure(Bob, qB)
 
-ThreadAlice().start()
-ThreadCharlie().start()
-ThreadBank().start()
+def main():
+    ThreadAlice().start()
+    ThreadCharlie().start()
+    ThreadBank().start()
+
+
+if __name__ == "__main__":
+    # execute only if run as a script
+    main()
