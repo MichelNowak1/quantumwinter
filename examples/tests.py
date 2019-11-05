@@ -1,0 +1,2 @@
+import simulaqron
+simulaqron.tests()
