@@ -31,7 +31,13 @@ class ThreadAlice(Thread):
             owf_state = qubit(Alice)
             owf_state.rot_X(owf_key)
             Alice.sendQubit(qforC, "Charlie")
+
+            # Bell state measurement 
+            owf_state.cnot(qA)
+            owf_state.H()
+
             measure(Alice, qA)
+            measure(Alice, owf_state)
 
 class ThreadCharlie(Thread):
 
