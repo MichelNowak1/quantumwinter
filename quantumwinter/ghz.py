@@ -24,11 +24,13 @@ class ThreadAlice(Thread):
     def run(self):
         with CQCConnection("Alice") as Alice:
             qA = Alice.recvEPR()
+            qforC = Alice.recvQubit()
             r = randint(0, 1)
             owf_key = bin(BB84_key)[2:] + bin(db_id)[2:] + bin(r)[2:] + bin(M)[2:]
             owf_key = int(abs(hash(str(owf_key))))%256
             owf_state = qubit(Alice)
             owf_state.rot_X(owf_key)
+            Alice.sendQubit(qforC, "Charlie")
             measure(Alice, qA)
 
 class ThreadCharlie(Thread):
@@ -43,9 +45,9 @@ class ThreadBank(Thread):
     def run(self):
         with CQCConnection("Bob") as Bob:
             qB = Bob.createEPR("Alice")
-            qC = qubit(Bob)
-            qB.cnot(qC)
-            Bob.sendQubit(qC,"Charlie")
+            qA = qubit(Bob)
+            qB.cnot(qA)
+            Bob.sendQubit(qA,"Alice")
             measure(Bob, qB)
 
 ThreadAlice().start()
