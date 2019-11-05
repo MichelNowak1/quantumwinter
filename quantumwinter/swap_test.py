@@ -74,7 +74,7 @@ def main():
         M = 2
         res_same = []
         res_diff = []
-        for i in tqdm.tqdm(range(100)):
+        for i in tqdm.tqdm(range(1000)):
             salt = random.randint(0, 1000)
             epsilon = random.randint(1,10)
             q1 = one_way_function(Alice, BB84_key, db_id, salt, M)
