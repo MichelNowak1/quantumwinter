@@ -2,14 +2,14 @@ from cqc.pythonLib import CQCConnection, qubit
 from threading import Thread
 from random import *
 import numpy as np
-
+import swap_test
 
 BB84_key = 2
 db_id = 1
 pk = 3
 sk = 4
 M = 400
-cheque = []
+cheque = {}
 
 def one_way_function(conn, BB84_key, db_id, r, M):
     owf_key = bin(BB84_key)[2:] + bin(db_id)[2:] + bin(r)[2:] + bin(M)[2:]
@@ -55,9 +55,9 @@ class ThreadAlice(Thread):
 
             # qforC qubit is now the cheque which is transferred to Charlie
             Alice.sendQubit(qforC, "Charlie")
-            cheque.append(db_id)
-            cheque.append(r)
-            cheque.append(M)
+            cheque['db_id'] = db_id
+            cheque['r'] = r
+            cheque['M'] = M
 
 
 class ThreadCharlie(Thread):
@@ -78,8 +78,19 @@ class ThreadBank(Thread):
             Bob.sendQubit(qA,"Alice")
             measure(Bob, qB)
 
+            # Bob receives cheque
             qC = Bob.recvQubit()
             measure(Bob, qC)
+
+            # Bob performs local computation
+            qB.H()
+            bob_measurement = measure(Bob, qB)
+            if bob_measurement == 1:
+                qC.Z()
+
+            # Bob computes one way function
+            owf_bank_state = one_way_function(Bob, BB84_key, db_id, cheque['r'], cheque['M'])
+
 
 def main():
     ThreadAlice().start()
