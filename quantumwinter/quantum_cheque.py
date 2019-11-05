@@ -8,13 +8,14 @@ db_id = 1
 pk = 3
 sk = 4
 M = 400
-cheque = {}
+cheque = [{}]
 
-n = 9
+n = 1
 
 def one_way_function(owf_state, BB84_key, db_id, r, M):
     owf_key = bin(BB84_key)[2:] + bin(db_id)[2:] + bin(r)[2:] + bin(M)[2:]
     owf_key = int(abs(hash(str(owf_key))))%256
+    print(owf_key)
     owf_state.rot_X(owf_key)
     return owf_state
 
@@ -63,9 +64,9 @@ class ThreadAlice(Thread):
             for i in range(0, n):
                 Alice.sendQubit(qforC_arr[i], "Charlie")
 
-            cheque['db_id'] = db_id
-            cheque['r'] = r
-            cheque['M'] = M
+                cheque[i]['db_id'] = db_id
+                cheque[i]['r'] = r
+                cheque[i]['M'] = M
 
 
 class ThreadCharlie(Thread):
@@ -116,7 +117,7 @@ class ThreadBank(Thread):
             owf_bank_state_arr = []
             for i in range(0, n):
                 owf_state = qubit(Bob)
-                owf_bank_state = one_way_function(owf_state, BB84_key, db_id, cheque['r'], cheque['M'])
+                owf_bank_state = one_way_function(owf_state, BB84_key, db_id, cheque[i]['r'], cheque[i]['M'])
                 owf_bank_state_arr.append(owf_bank_state)
 
 
@@ -124,8 +125,29 @@ class ThreadBank(Thread):
             for i in range(0, n):
                 q = qubit(Bob)
 
-                owf_bank_state_arr[i].cnot(q)
-                qC_arr[i].cnot(q)
+                q.H()
+                owf_bank_state_arr[i].cnot(qC_arr[i])
+
+                owf_bank_state_arr[i].H()
+
+                owf_bank_state_arr[i].cnot(qC_arr[i])
+
+                qC_arr[i].T()
+
+                q.cnot(qC_arr[i])
+                qC_arr[i].T()
+
+                owf_bank_state_arr[i].cnot(qC_arr[i])
+                qC_arr[i].T()
+                q.cnot(qC_arr[i])
+
+                owf_bank_state_arr[i].T()
+                q.cnot(owf_bank_state_arr[i])
+                owf_bank_state_arr[i].T()
+                q.T()
+
+                q.cnot(owf_bank_state_arr[i])
+                q.H()
 
                 score.append(q.measure())
                 # collaspse everything to avoid :
