@@ -24,11 +24,9 @@ def A_party(num_bits, conn):
         
             if random_basis_alice == 1:    
                 q.H()
-            print("Alice sending")
             conn.sendQubit(q, "Bob")
         print("bits Alice:",bits_alice)
         print("basis Alice:",basis_alice)
-
 
     def compare_basis(basis_alice,basis_bob):
         matchList=[]
@@ -53,7 +51,6 @@ def A_party(num_bits, conn):
             key_A.append(bits_alice[i]) #quantum state 0,+:0    1,-:1
         
         key_A = ''.join(map(str, key_A))
-        print("key_A=",key_A)
         return key_A
 
     preperation_Alice()

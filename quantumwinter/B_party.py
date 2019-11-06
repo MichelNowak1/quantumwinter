@@ -13,7 +13,6 @@ def B_party(num_bits, conn):
     def preparation_Bob():
         q_arr = []
         for i in range(num_bits):
-            print("Bob wait")
             q = conn.recvQubit()
             q_arr.append(q)
             
@@ -27,15 +26,11 @@ def B_party(num_bits, conn):
             res_measure.append(m)
 
         print ("basis Bob:  ", basis_bob)
-       
         print ("measurement results of Bob: ",res_measure)         
-        
 
-        
 
     def send_basis_toA():
         conn.sendClassical("Alice", basis_bob)
-
 
     def rec_keygen():
         matchList = conn.recvClassical()
@@ -46,12 +41,6 @@ def B_party(num_bits, conn):
         print("key_B=",key_B)     
         return key_B
             
-            
     preparation_Bob()
     send_basis_toA()
     return rec_keygen()
-
-if __name__ == "__main__":
-    B_party(8)
-
-

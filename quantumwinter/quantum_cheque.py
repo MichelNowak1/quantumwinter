@@ -9,7 +9,6 @@ from A_party import A_party
 from B_party import B_party
 
 len_BB84_key = 8
-#BB84_key = 2
 db_id = 1
 pk = 3
 sk = 4
@@ -23,9 +22,9 @@ def measure(conn, q):
     # Measure qubit
     m=q.measure()
     to_print="App {}: Measurement outcome is: {}".format(conn.name,m)
-    print("|"+"-"*(len(to_print)+2)+"|")
-    print("| "+to_print+" |")
-    print("|"+"-"*(len(to_print)+2)+"|")
+    # print("|"+"-"*(len(to_print)+2)+"|")
+    # print("| "+to_print+" |")
+    # print("|"+"-"*(len(to_print)+2)+"|")
     return m
 
 class ThreadAlice(Thread):
@@ -135,12 +134,12 @@ class ThreadBank(Thread):
             res_same = []
             for i in range(0, n):
                 # True state
-                # owf_bank_state = one_way_function(Bob,
-                #    BB84_key, cheque[i]['db_id'], cheque[i]['r'], cheque[i]['M'])
+                owf_bank_state = one_way_function(Bob,
+                    BB84_key, cheque[i]['db_id'], cheque[i]['r'], cheque[i]['M'])
 
                 # Random state (with incorrect db_id)
-                owf_bank_state = one_way_function(Bob,
-                   BB84_key, 231, cheque[i]['r'], cheque[i]['M'])
+                # owf_bank_state = one_way_function(Bob,
+                #   BB84_key, 231, cheque[i]['r'], cheque[i]['M'])
 
                 m_same = swap_test(Bob, owf_bank_state, qC_arr[i])
                 res_same.append(m_same)
@@ -151,6 +150,7 @@ class ThreadBank(Thread):
                 str(corr_percent) + "%")
 
             threshold_constant_percent = (1 - (3/4)**n)*100
+            print(threshold_constant_percent)
             if (corr_percent > threshold_constant_percent):
                 print ("Cheque is accepted")
             else:
