@@ -1,6 +1,6 @@
 # quantumwinter
 
-<img src="figures/team.jpg" alt="title" width="600"/>
+<img src="figures/title.jpg" alt="title" width="600"/>
 
 settings for simulaqron:
 ```
