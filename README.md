@@ -20,7 +20,7 @@ python quantumwinter/quantum_cheque.py
 <img src="figures/team.jpg" alt="team" width="600"/>
 
 Team Quantum Winter:                                                                                                   - Nicolas GAUDE
-- Michel NOWA
+- Michel NOWAK
 - Rhea PAREKH
 - ChinTe LIAO
 - Hop DINH
