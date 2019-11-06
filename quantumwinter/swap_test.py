@@ -44,14 +44,6 @@ def swap_test(conn, q1, q2):
     # swap_test implementation from :
     # https://en.wikipedia.org/wiki/Swap_test
 
-    # q0 = qubit(conn)
-    # q1.cnot(q0)
-    # q2.cnot(q0)
-    # m = q0.measure()
-    # q1.measure()
-    # q2.measure()
-    # return m
-
     q0 = qubit(conn)
     q0.H()
     CSWAP(q0, q1, q2)
