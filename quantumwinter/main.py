@@ -12,13 +12,13 @@ class ThreadAlice(Thread):
 
     def run(self):
         with CQCConnection("Alice") as Alice:
-            BB84_key = A_party(len_BB84_key)       
+            BB84_key = A_party(len_BB84_key, Alice)       
 
 class ThreadBank(Thread):
 
     def run(self):
         with CQCConnection("Bob") as Bob:
-            BB84_key = B_party(len_BB84_key)
+            BB84_key = B_party(len_BB84_key, Bob)
 
 
 def main():

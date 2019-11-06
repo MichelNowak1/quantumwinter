@@ -5,27 +5,26 @@ from multiprocessing import Pool
 from cqc.pythonLib import CQCConnection, qubit
 
 
-def B_party(num_bits):
+def B_party(num_bits, conn):
 
     basis_bob = [] 
     res_measure = []
 
     def preparation_Bob():
-        with CQCConnection("Bob") as Bob:
-            q_arr = []
-            for i in range(num_bits):
-                print("Bob wait")
-                q = Bob.recvQubit()
-                q_arr.append(q)
-                
-                
-            for i in range(num_bits): 
-                random_basis_bob = randint(0,1)
-                basis_bob.append(random_basis_bob)
-                if random_basis_bob == 1:
-                    q_arr[i].H()
-                m = q_arr[i].measure()
-                res_measure.append(m)
+        q_arr = []
+        for i in range(num_bits):
+            print("Bob wait")
+            q = conn.recvQubit()
+            q_arr.append(q)
+            
+            
+        for i in range(num_bits): 
+            random_basis_bob = randint(0,1)
+            basis_bob.append(random_basis_bob)
+            if random_basis_bob == 1:
+                q_arr[i].H()
+            m = q_arr[i].measure()
+            res_measure.append(m)
 
         print ("basis Bob:  ", basis_bob)
        
@@ -35,26 +34,22 @@ def B_party(num_bits):
         
 
     def send_basis_toA():
-        with CQCConnection("Bob") as Bob:
-            Bob.sendClassical("Alice", basis_bob)
-
-
+        conn.sendClassical("Alice", basis_bob)
 
 
     def rec_keygen():
-        with CQCConnection("Bob") as Bob:
-            matchList = Bob.recvClassical()
-            key_B=[]
-            for i in matchList:
-                key_B.append(res_measure[i])
-            key_B = ''.join(map(str, key_B))
-            print("key_B=",key_B)     
-            return key_B
+        matchList = conn.recvClassical()
+        key_B=[]
+        for i in matchList:
+            key_B.append(res_measure[i])
+        key_B = ''.join(map(str, key_B))
+        print("key_B=",key_B)     
+        return key_B
             
             
     preparation_Bob()
     send_basis_toA()
-    return "keyB=",rec_keygen()
+    return rec_keygen()
 
 if __name__ == "__main__":
     B_party(8)

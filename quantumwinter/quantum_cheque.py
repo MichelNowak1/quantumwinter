@@ -50,7 +50,7 @@ class ThreadAlice(Thread):
             # r: random salting parameter
             # To form a unique key and generates a hashed quantum state
             # from that unique key using the quantum one way function
-            BB84_key = A_party(len_BB84_key)
+            BB84_key = A_party(len_BB84_key, Alice)
 
             for i in range(0, n):
                 r = randint(0, 1)
@@ -112,7 +112,7 @@ class ThreadBank(Thread):
                 qB_arr[i].cnot(qA)
                 Bob.sendQubit(qA,"Alice")
 
-            BB84_key = B_party(len_BB84_key)
+            BB84_key = B_party(len_BB84_key, Bob)
             # Bob now waits to receive the cheque from Charlie
             qC_arr = []
             for i in range(0, n):
@@ -135,12 +135,12 @@ class ThreadBank(Thread):
             res_same = []
             for i in range(0, n):
                 # True state
-                owf_bank_state = one_way_function(Bob,
-                    BB84_key, cheque[i]['db_id'], cheque[i]['r'], cheque[i]['M'])
+                # owf_bank_state = one_way_function(Bob,
+                #    BB84_key, cheque[i]['db_id'], cheque[i]['r'], cheque[i]['M'])
 
                 # Random state (with incorrect db_id)
-                # owf_bank_state = one_way_function(Bob,
-                #    BB84_key, 231, cheque[i]['r'], cheque[i]['M'])
+                owf_bank_state = one_way_function(Bob,
+                   BB84_key, 231, cheque[i]['r'], cheque[i]['M'])
 
                 m_same = swap_test(Bob, owf_bank_state, qC_arr[i])
                 res_same.append(m_same)
