@@ -16,7 +16,7 @@ sk = 4
 M = 400
 cheque = []
 
-n = 9
+n = 24
 
 
 def measure(conn, q):
@@ -101,6 +101,7 @@ class ThreadBank(Thread):
 
             # Bank (Bob) generates the EPR pair and sends
             # two qubits to Alice (A1 and A2)
+
             qB_arr = []
             for i in range(0, n):
                 qB = Bob.createEPR("Alice")
@@ -133,13 +134,27 @@ class ThreadBank(Thread):
             # way function is same as the cheque.
             res_same = []
             for i in range(0, n):
+                # True state
                 owf_bank_state = one_way_function(Bob,
                     BB84_key, cheque[i]['db_id'], cheque[i]['r'], cheque[i]['M'])
+
+                # Random state (with incorrect db_id)
+                # owf_bank_state = one_way_function(Bob,
+                #    BB84_key, 231, cheque[i]['r'], cheque[i]['M'])
 
                 m_same = swap_test(Bob, owf_bank_state, qC_arr[i])
                 res_same.append(m_same)
             print(res_same)
 
+            corr_percent = (1-sum(res_same)/len(res_same))*100
+            print("Correlation percentage between the two states is: " +
+                str(corr_percent) + "%")
+
+            threshold_constant_percent = (1 - (3/4)**n)*100
+            if (corr_percent > threshold_constant_percent):
+                print ("Cheque is accepted")
+            else:
+                print("Cheque is aborted")
 
 def main():
     ThreadAlice().start()
