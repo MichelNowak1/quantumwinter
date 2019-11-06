@@ -25,6 +25,7 @@ def A_party(num_bits):
             
                 if random_basis_alice == 1:    
                     q.H()
+                print("Alice sending")
                 Alice.sendQubit(q, "Bob")
             print("bits Alice:",bits_alice)
             print("basis Alice:",basis_alice)
@@ -64,4 +65,4 @@ def A_party(num_bits):
 
 
 if __name__ == "__main__":
-    A_party(20)
+    A_party(8)
