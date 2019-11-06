@@ -1,12 +1,15 @@
 from cqc.pythonLib import CQCConnection, qubit
 from one_way_function import one_way_function
-from swap_test import swap_test
+#from swap_test import swap_test
 from threading import Thread
 from random import *
 import numpy as np
 from swap_test import *
+from A_party import A_party
+from B_party import B_party
 
-BB84_key = 2
+len_BB84_key = 8
+#BB84_key = 2
 db_id = 1
 pk = 3
 sk = 4
@@ -47,6 +50,8 @@ class ThreadAlice(Thread):
             # r: random salting parameter
             # To form a unique key and generates a hashed quantum state
             # from that unique key using the quantum one way function
+            BB84_key = A_party(len_BB84_key)
+
             for i in range(0, n):
                 r = randint(0, 1)
                 owf_state = one_way_function(Alice, BB84_key, db_id, r, M)
@@ -106,6 +111,7 @@ class ThreadBank(Thread):
                 qB_arr[i].cnot(qA)
                 Bob.sendQubit(qA,"Alice")
 
+            BB84_key = B_party(len_BB84_key)
             # Bob now waits to receive the cheque from Charlie
             qC_arr = []
             for i in range(0, n):
