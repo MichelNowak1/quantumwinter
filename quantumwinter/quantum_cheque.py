@@ -32,7 +32,18 @@ class ThreadAlice(Thread):
     def run(self):
         with CQCConnection("Alice") as Alice:
 
+            # Alice uses her supplementary information like:
+            # M: amount of money
+            # db_id: database ID
+            # r: random salting parameter
+            # To form a unique key and generates a hashed quantum state
+            # from that unique key using the quantum one way function
+            print('>> BB84_key alice')
+            BB84_key = A_party(len_BB84_key, Alice)
+            print('<< BB84_key alice')
+
             # Alice recieves two qubits of every GHZ state from Bank: A1 and A2
+            print('>> section alice')
             qA_arr = []
             qforC_arr = []
             for i in range(0, n):
@@ -43,13 +54,6 @@ class ThreadAlice(Thread):
                 qforC = Alice.recvQubit()
                 qforC_arr.append(qforC)
 
-            # Alice uses her supplementary information like:
-            # M: amount of money
-            # db_id: database ID
-            # r: random salting parameter
-            # To form a unique key and generates a hashed quantum state
-            # from that unique key using the quantum one way function
-            BB84_key = A_party(len_BB84_key, Alice)
 
             for i in range(0, n):
                 r = randint(0, 1)
@@ -78,29 +82,40 @@ class ThreadAlice(Thread):
             # A2 qubit (cheque) is transferred to Charlie
             for i in range(0, n):
                 Alice.sendQubit(qforC_arr[i], "Charlie")
+            print('<< section alice')
+            
 
 class ThreadCharlie(Thread):
 
     def run(self):
         with CQCConnection("Charlie") as Charlie:
             # Charlie receives the cheque from Alice
+            print('>> section charlie')
             qC_arr = []
             for i in range(0, n):
                 qC = Charlie.recvQubit()
+                print('== section charlie : recv')
                 qC_arr.append(qC)
 
             # Charlie sends the cheque to Bank (Bob) to cash it
             for i in range(0, n):
                 Charlie.sendQubit(qC_arr[i], "Bob")
-
+            print('<< section charlie')
+            
 class ThreadBank(Thread):
 
     def run(self):
         with CQCConnection("Bob") as Bob:
 
+            print('>> BB84_key bob')
+            BB84_key = B_party(len_BB84_key, Bob)
+            # Bob now waits to receive the cheque from Charlie
+            print('<< BB84_key bob')
+            
             # Bank (Bob) generates the EPR pair and sends
             # two qubits to Alice (A1 and A2)
 
+            print('>> section bob')
             qB_arr = []
             for i in range(0, n):
                 qB = Bob.createEPR("Alice")
@@ -110,13 +125,13 @@ class ThreadBank(Thread):
                 qA = qubit(Bob)
                 qB_arr[i].cnot(qA)
                 Bob.sendQubit(qA,"Alice")
+            print('== section bob')
 
-            BB84_key = B_party(len_BB84_key, Bob)
-            # Bob now waits to receive the cheque from Charlie
             qC_arr = []
             for i in range(0, n):
                 qC = Bob.recvQubit()
                 qC_arr.append(qC)
+            print('<< section bob' )
 
             # Bob performs local computation which comprises of
             # Error correction after the bell state measurement performed by Alice
